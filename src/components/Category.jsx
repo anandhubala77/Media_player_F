@@ -8,6 +8,7 @@ import {
   addcategory,
   deleteCategory,
   getAllCategories,
+  getVideodetailsById,
 } from "../services/allApi";
 
 function Category() {
@@ -57,6 +58,28 @@ function Category() {
     }
   };
 
+  const dragOver = (e) => {
+    e.preventDefault(e);
+  };
+  const videoDropped = async (e, id) => {
+    console.log(`${id} dropped insdie Category`);
+    const vId = e.dataTransfer.getData("videoId");
+    console.log(`video id with ${vId} cis dropped in category with id ${id}`);
+    const result = await getVideodetailsById(vId);
+    console.log(result);
+    const { data } = result;
+
+    let selectedCategories = categories?.find((item) => item.id == id);
+    console.log("selectedCategories");
+    console.log(selectedCategories);
+    selectedCategories.allVideos.push(data)
+    console.log('final category');
+    console.log(selectedCategories);
+    
+    
+    
+
+  };
   useEffect(() => {
     getCategories();
   }, []);
@@ -102,7 +125,12 @@ function Category() {
       </Modal>
 
       {categories?.map((item) => (
-        <div className="border border-secondary rounded p-3 mt-2">
+        <div
+          className="border border-secondary rounded p-3 mt-2"
+          droppable
+          onDragOver={(e) => dragOver(e)}
+          onDrop={(e) => videoDropped(e, item.id)}
+        >
           <div className="d-flex justify-content-between align-items-center m-2">
             <h6>{item.categoryName}</h6>
             <button
